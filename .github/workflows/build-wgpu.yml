@@ -106,4 +106,3 @@ jobs:
           name: wgpu-artifacts
           path: |
             ${{ github.workspace }}/tmp/target/${{ matrix.target }}/release/${{ matrix.goos }}_${{ matrix.goarch }}_libwgpu_native.so
-            ${{ github.workspace }}/tmp/target/${{ matrix.target }}/release/${{ matrix.goos }}_${{ matrix.goarch }}_libwgpu_native.dylib
