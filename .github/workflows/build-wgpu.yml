@@ -48,6 +48,20 @@ jobs:
             goos: darwin
             goarch: arm64
 
+          - name: build - android/arm64
+            os: ubuntu-22.04
+            target: aarch64-linux-android
+            goos: android
+            goarch: arm64
+            setup_env: |
+              set -x
+              export CC=$ANDROID_NDK_PATH/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android$ANDROID_MIN_SDK-clang
+
+              echo "CC=$CC" >> $GITHUB_ENV
+              echo "CXX=$CC++" >> $GITHUB_ENV
+              echo "CLANG_PATH=$CC" >> $GITHUB_ENV
+              echo "CARGO_TARGET_AARCH64_LINUX_ANDROID_LINKER=$CC" >> $GITHUB_ENV
+
     steps:
       # Checkout
       - uses: actions/checkout@v3
@@ -125,6 +139,7 @@ jobs:
           set -ex
 
           declare -a arr=(
+              "android_arm64"
               "darwin_amd64"
               "darwin_arm64"
               "linux_amd64"
