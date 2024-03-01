@@ -21,15 +21,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: build - windows/amd64
-            os: windows-2019
-            target: x86_64-pc-windows-gnu
-            goos: windows
-            goarch: amd64
-            setup_env: |
-              choco install -y --force llvm | exit 0
-              echo "LIBCLANG_PATH=C:\Program Files\LLVM\lib" >> $GITHUB_ENV
-
           - name: build - android/arm64
             os: ubuntu-22.04
             target: aarch64-linux-android
@@ -43,6 +34,18 @@ jobs:
               echo "CXX=$CC++" >> $GITHUB_ENV
               echo "CLANG_PATH=$CC" >> $GITHUB_ENV
               echo "CARGO_TARGET_AARCH64_LINUX_ANDROID_LINKER=$CC" >> $GITHUB_ENV
+
+          - name: build - ios/amd64
+            os: macos-11
+            target: x86_64-apple-ios
+            goos: ios
+            goarch: amd64
+
+          - name: build - ios/arm64
+            os: macos-11
+            target: aarch64-apple-ios
+            goos: ios
+            goarch: arm64
 
     steps:
       # Checkout
@@ -121,8 +124,9 @@ jobs:
           set -ex
 
           declare -a arr=(
-              "android_arm64"
-              "windows_amd64")
+              "ios_amd64"
+              "ios_arm64"
+              "android_arm64")
 
           for i in "${arr[@]}"
           do
@@ -132,8 +136,8 @@ jobs:
               GOARCH="${tuple[1]}"
 
               mkdir -p $GITHUB_WORKSPACE/wgpu/lib/$GOOS/$GOARCH
-              rm -f $GITHUB_WORKSPACE/wgpu/lib/$GOOS/$GOARCH/libwgpu_native.a
-              cp $GITHUB_WORKSPACE/tmp/"$GOOS"_"$GOARCH"_libwgpu_native.a $GITHUB_WORKSPACE/wgpu/lib/$GOOS/$GOARCH/libwgpu_native.a
+              rm -f $GITHUB_WORKSPACE/wgpu/lib/$GOOS/$GOARCH/libwgpu_native.so
+              cp $GITHUB_WORKSPACE/tmp/"$GOOS"_"$GOARCH"_libwgpu_native.so $GITHUB_WORKSPACE/wgpu/lib/$GOOS/$GOARCH/libwgpu_native.so
           done
 
           rm -rf $GITHUB_WORKSPACE/tmp
