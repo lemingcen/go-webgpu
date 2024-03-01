@@ -89,7 +89,7 @@ jobs:
           if [ ${{ matrix.goos }} == "android" ]; then
             mkdir -p tmp-lib
             echo "INPUT(-lunwind)" | tee tmp-lib/libgcc.a
-            export RUSTFLAGS="-L $PWD/tmp-lib"
+            export RUSTFLAGS="-L $PWD/tmp-lib -C link-args=-landroid"
           fi
 
           cargo build --release
