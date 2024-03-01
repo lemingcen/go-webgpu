@@ -98,13 +98,18 @@ jobs:
           cargo build --release
           ls -al target/${{ matrix.target }}/release/
 
-          mv target/${{ matrix.target }}/release/libwgpu_native.a target/${{ matrix.target }}/release/${{ matrix.goos }}_${{ matrix.goarch }}_libwgpu_native.a
+          if [ ${{ matrix.goos }} == "ios" ]; then
+            mv target/${{ matrix.target }}/release/libwgpu_native.dylib target/${{ matrix.target }}/release/${{ matrix.goos }}_${{ matrix.goarch }}_libwgpu_native.dylib
+          else
+            mv target/${{ matrix.target }}/release/libwgpu_native.so target/${{ matrix.target }}/release/${{ matrix.goos }}_${{ matrix.goarch }}_libwgpu_native.so
+          fi
 
       - uses: actions/upload-artifact@v3
         with:
           name: wgpu-artifacts
           path: |
-            ${{ github.workspace }}/tmp/target/${{ matrix.target }}/release/${{ matrix.goos }}_${{ matrix.goarch }}_libwgpu_native.a
+            ${{ github.workspace }}/tmp/target/${{ matrix.target }}/release/${{ matrix.goos }}_${{ matrix.goarch }}_libwgpu_native.so
+            ${{ github.workspace }}/tmp/target/${{ matrix.target }}/release/${{ matrix.goos }}_${{ matrix.goarch }}_libwgpu_native.dylib
 
   send-pr:
     if: ${{ github.ref == 'refs/heads/main' }}
@@ -138,6 +143,8 @@ jobs:
               mkdir -p $GITHUB_WORKSPACE/wgpu/lib/$GOOS/$GOARCH
               rm -f $GITHUB_WORKSPACE/wgpu/lib/$GOOS/$GOARCH/libwgpu_native.so
               cp $GITHUB_WORKSPACE/tmp/"$GOOS"_"$GOARCH"_libwgpu_native.so $GITHUB_WORKSPACE/wgpu/lib/$GOOS/$GOARCH/libwgpu_native.so
+              rm -f $GITHUB_WORKSPACE/wgpu/lib/$GOOS/$GOARCH/libwgpu_native.dylib
+              cp $GITHUB_WORKSPACE/tmp/"$GOOS"_"$GOARCH"_libwgpu_native.dylib $GITHUB_WORKSPACE/wgpu/lib/$GOOS/$GOARCH/libwgpu_native.dylib
           done
 
           rm -rf $GITHUB_WORKSPACE/tmp
